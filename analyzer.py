@@ -22,55 +22,29 @@ def getData(player, format, type):
     else:
         odi_show(player=player, type=type)
         t20_show(player=player, type=type)
+        overall_Bat_chart(player=player)
+        milestones_chart(player=player)
+        bat_figures(player=player)
+        wickets_pie(player=player)
+        bowl_figures(player=player)
+        milestones_chart_bowl(player=player)
 
 def odi_show(player, type):
     st.markdown(f"### *ODI data ({type})*")
     player_stats_bat = odi_bat.loc[(odi_bat['Player'] == player)]
     if len(player_stats_bat) == 0:
-        st.markdown("#### *>> No data available*")
+        st.markdown("#### *>> No ODI data available*")
         return
     player_stats_bowl = odi_bowl.loc[(odi_bowl['Player'] == player)]
     
     if type == "Batting":
-        span, inn, run = list(player_stats_bat['Span_ODI_bat']), list(player_stats_bat['Inns_ODI_bat']), list(player_stats_bat['Runs_ODI_bat'])
-        sr, hs, isNO = list(player_stats_bat['SR_ODI_bat']), list(player_stats_bat['HS_ODI']), list(player_stats_bat['HS_ODI_isNO'])
-        if isNO:
-            hs = f"{hs[0]}*"
-        if span[0] == 0:
-            span[0] = "<1"
+        bat_ODI(stats=player_stats_bat)
 
-        col1, col2, col3 = st.columns(3)
-        col4, col5, col6 = st.columns(3)
-        col1.markdown(f"### {span[0]}\nYears Played")
-        col2.markdown(f"### {inn[0]}\nInnings played")
-        col3.markdown(f"### {run[0]}\nRuns Scored")
-
-        col4.markdown(f"### {sr[0]}\nStrike rate")
-        col5.markdown(f"### {hs}\nHighest score")
     elif type == "Bowling":
-        span, inn, wkts = list(player_stats_bat['Span_ODI_bat']), list(player_stats_bat['Inns_ODI_bat']), list(player_stats_bowl['Wkts_ODI'])
-        econ, best_wk, best_run = list(player_stats_bowl['Econ_ODI']), list(player_stats_bowl['best_wkts_ODI']), list(player_stats_bowl['best_runs_given_ODI'])
-        bbi = f"{best_wk[0]}/{best_run[0]}"
-        if span[0] == 0:
-            span[0] = "<1"
+        bowl_ODI(stats=player_stats_bowl)
 
-        col1, col2, col3 = st.columns(3)
-        col4, col5, col6 = st.columns(3)
-        col1.markdown(f"### {span[0]}\nYears Played")
-        col2.markdown(f"### {inn[0]}\nInnings played")
-        col3.markdown(f"### {wkts[0]}\nWickets taken")
-
-        col4.markdown(f"### {econ[0]}\nEconomy")
-        col5.markdown(f"### {bbi}\nBest Bowling")
     else:
-        span, match, run, wkts = list(player_stats_bat['Span_ODI_bat']), list(player_stats_bat['Inns_ODI_bat']), list(player_stats_bat['Runs_ODI_bat']), list(player_stats_bowl['Wkts_ODI'])
-        if span[0] == 0:
-            span[0] = "<1"
-        col1, col2, col3, col4 = st.columns(4)
-        col1.markdown(f"### {span[0]}\nYears Played")
-        col2.markdown(f"### {match[0]}\nInnings played")
-        col3.markdown(f"### {run[0]}\nRuns Scored")
-        col4.markdown(f"### {wkts[0]}\nWickets taken")
+        overall_ODI(bat_stats=player_stats_bat, bowl_stats=player_stats_bowl)
 
 def t20_show(player, type):
     st.markdown(f"### *T20i data ({type})*")
@@ -96,8 +70,6 @@ def t20_show(player, type):
 
         col4.markdown(f"### {sr[0]}\nStrike rate")
         col5.markdown(f"### {hs}\nHighest score")
-        overall_Bat_chart(player=player)
-        milestones_chart(player=player)
         
     elif type == "Bowling":
         span, inn, wkts = list(player_stats_bat['Span_t20_bat']), list(player_stats_bat['Inns_t20_bat']), list(player_stats_bowl['Wkts_t20'])
@@ -123,6 +95,33 @@ def t20_show(player, type):
         col2.markdown(f"### {inn[0]}\nInnings played")
         col3.markdown(f"### {run[0]}\nRuns Scored")
         col4.markdown(f"### {wkts[0]}\nWickets taken")
+
+def bat_figures(player):
+    odi_sr = odi_bat.loc[(odi_bat['Player'] == player)]['SR_ODI_bat']
+    t20_sr = t20_bat.loc[(t20_bat['Player'] == player)]['SR_t20_bat']
+    odi_ave = odi_bat.loc[(odi_bat['Player'] == player)]['Ave_ODI_bat']
+    t20_ave = t20_bat.loc[(t20_bat['Player'] == player)]['Ave_t20_bat']
+
+    sr = list(odi_sr) + list(t20_sr)
+    ave = list(odi_ave) + list(t20_ave)
+
+    figures = pd.DataFrame([sr, ave], columns=["ODI", "T20i"], index=["Strike rate", "Average"])
+    st.bar_chart(data=figures, horizontal=True, height=300)
+
+def bowl_figures(player):
+    odi_sr = odi_bowl.loc[(odi_bowl['Player'] == player)]['SR_ODI_bowl']
+    t20_sr = t20_bowl.loc[(t20_bowl['Player'] == player)]['SR_t20_bowl']
+    odi_ave = odi_bowl.loc[(odi_bowl['Player'] == player)]['Ave_ODI_bowl']
+    t20_ave = t20_bowl.loc[(t20_bowl['Player'] == player)]['Ave_t20_bowl']
+    odi_econ = odi_bowl.loc[(odi_bowl['Player'] == player)]['Econ_ODI']
+    t20_econ = t20_bowl.loc[(t20_bowl['Player'] == player)]['Econ_t20']
+
+    sr = list(odi_sr) + list(t20_sr)
+    ave = list(odi_ave) + list(t20_ave)
+    econ = list(odi_econ) + list(t20_econ)
+
+    figures = pd.DataFrame([sr, ave, econ], columns=["ODI", "T20i"], index=["Strike rate", "Average", "Economy"])
+    st.bar_chart(data=figures)
 
 def overall_Bat_chart(player):
     odi_runs = odi_bat.loc[(odi_bat['Player'] == player)]['Runs_ODI_bat']
@@ -153,3 +152,71 @@ def milestones_chart(player):
     milestones = pd.DataFrame([cents, fifties, ducks], columns=["ODI", "T20i"], index=["100s", "50s", "Ducks"])
 
     st.bar_chart(data=milestones, color=["#0000ff", "#ff0000"])
+
+def milestones_chart_bowl(player):
+    _4s_ODI = odi_bowl.loc[(odi_bowl['Player'] == player)]['4_W_ODI']
+    _4s_t20 = t20_bowl.loc[(t20_bowl['Player'] == player)]['4_W_t20']
+    _5s_ODI = odi_bowl.loc[(odi_bowl['Player'] == player)]['5_W_ODI']
+    _5s_t20 = t20_bowl.loc[(t20_bowl['Player'] == player)]['5_W_t20']
+
+    _4s = list(_4s_t20) + list(_4s_ODI)
+    _5s = list(_5s_ODI) + list(_5s_t20)
+
+    milestones = pd.DataFrame([_4s, _5s], columns=["ODI", "T20i"], index=["4 Wicket haul", "5 Wicket haul"])
+    st.bar_chart(data=milestones, horizontal=True, height=300)
+
+def wickets_pie(player):
+    odi_wkts = odi_bowl.loc[(odi_bowl['Player'] == player)]['Wkts_ODI']
+    t20_wkts = t20_bowl.loc[(t20_bowl['Player'] == player)]['Wkts_t20']
+
+    total_wkts = list(odi_wkts) + list(t20_wkts)
+
+    fig = plt.figure(figsize=(5,5))
+    plt.pie(total_wkts, labels=["ODI", "T20i"], autopct="%1.1f%%")
+    plt.title(f"Total wicket in both formats: {total_wkts[0] + total_wkts[1]}")
+
+    st.pyplot(fig)
+
+def bat_ODI(stats):
+    span, inn, run = list(stats['Span_ODI_bat']), list(stats['Inns_ODI_bat']), list(stats['Runs_ODI_bat'])
+    sr, hs, isNO = list(stats['SR_ODI_bat']), list(stats['HS_ODI']), list(stats['HS_ODI_isNO'])
+    if isNO:
+        hs = f"{hs[0]}*"
+    if span[0] == 0:
+        span[0] = "<1"
+
+    col1, col2, col3 = st.columns(3)
+    col4, col5, col6 = st.columns(3)
+    col1.markdown(f"### {span[0]}\nYears Played")
+    col2.markdown(f"### {inn[0]}\nInnings played")
+    col3.markdown(f"### {run[0]}\nRuns Scored")
+
+    col4.markdown(f"### {sr[0]}\nStrike rate")
+    col5.markdown(f"### {hs}\nHighest score")
+
+def bowl_ODI(stats):
+    span, inn, wkts = list(stats['Span_ODI_bowl']), list(stats['Inns_ODI_bowl']), list(stats['Wkts_ODI'])
+    econ, best_wk, best_run = list(stats['Econ_ODI']), list(stats['best_wkts_ODI']), list(stats['best_runs_given_ODI'])
+    bbi = f"{best_wk[0]}/{best_run[0]}"
+    if span[0] == 0:
+        span[0] = "<1"
+
+    col1, col2, col3 = st.columns(3)
+    col4, col5, col6 = st.columns(3)
+    col1.markdown(f"### {span[0]}\nYears Played")
+    col2.markdown(f"### {inn[0]}\nInnings played")
+    col3.markdown(f"### {wkts[0]}\nWickets taken")
+
+    col4.markdown(f"### {econ[0]}\nEconomy")
+    col5.markdown(f"### {bbi}\nBest Bowling")
+
+def overall_ODI(bat_stats, bowl_stats):
+    span, match, run, wkts = list(bat_stats['Span_ODI_bat']), list(bat_stats['Inns_ODI_bat']), list(bat_stats['Runs_ODI_bat']), list(bowl_stats['Wkts_ODI'])
+    if span[0] == 0:
+        span[0] = "<1"
+    col1, col2, col3, col4 = st.columns(4)
+    col1.markdown(f"### {span[0]}\nYears Played")
+    col2.markdown(f"### {match[0]}\nInnings played")
+    col3.markdown(f"### {run[0]}\nRuns Scored")
+    col4.markdown(f"### {wkts[0]}\nWickets taken")
+
