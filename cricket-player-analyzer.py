@@ -12,11 +12,11 @@ player_names = np.concatenate((np.array(["None"]), np.array(player_df['Player'])
 sideBar = st.sidebar
 
 st.title("Cricket player Analyzer!🏏")
-st.write("Know all the cricket related analysis at this one spot")
+st.write("Know all the cricket players related analysis at this one spot.")
 st.write("(Note: The information is limited to year 2019)")
 
-sideBar.title("Choose the player")
-player = sideBar.selectbox("Select", player_names)
+sideBar.title("Choose the Parameters")
+player = sideBar.selectbox("Select a Player", player_names)
 format = sideBar.selectbox("Select the format", ["Overall", "ODI", "T20i"])
 type = sideBar.selectbox("Select the type of Analysis", ["Overall", "Batting", "Bowling"])
 
