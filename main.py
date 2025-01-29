@@ -4,7 +4,7 @@ import numpy as np
 
 import analyzer
 
-player_df = pd.read_csv(r"cleaned_data\ODI_bat.csv")
+player_df = pd.read_csv("ODI_bat.csv")
 player_df = pd.DataFrame(player_df)
 
 player_names = np.concatenate((np.array(["None"]), np.array(player_df['Player'])))
