@@ -2,14 +2,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
 
-odi_bat = pd.read_csv(r"ODI_bat.csv")
+odi_bat = pd.read_csv("ODI_bat.csv")
 odi_bat = pd.DataFrame(odi_bat)
-odi_bowl = pd.read_csv(r"ODI_bowl.csv")
+odi_bowl = pd.read_csv("ODI_bowl.csv")
 odi_bowl = pd.DataFrame(odi_bowl)
 
-t20_bat = pd.read_csv(r"t20_bat.csv")
+t20_bat = pd.read_csv("t20_bat.csv")
 t20_bat = pd.DataFrame(t20_bat)
-t20_bowl = pd.read_csv(r"t20_bowl.csv")
+t20_bowl = pd.read_csv("t20_bowl.csv")
 t20_bowl = pd.DataFrame(t20_bowl)
 
 def getData(player, format, type):
